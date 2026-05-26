@@ -1,11 +1,13 @@
 import {Webhook} from "svix";
 import userModel from "../models/userModel.js";
+import connectDB from "../configs/mongodb.js";
 //api controller function 
 //http://localhost:4000/api/user/webhooks
 
 const clerkWebhooks = async (req, res) => {
 
     try {
+        await connectDB();
         //create svix instance with clerk
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
@@ -26,6 +28,7 @@ const clerkWebhooks = async (req, res) => {
         firstName: data.first_name,
         lastName: data.last_name,
         photo: data.image_url
+
     };
     console.log("userData:", userData); // ← and this
     await userModel.create(userData);

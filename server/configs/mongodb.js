@@ -1,12 +1,18 @@
 import mongoose from "mongoose";
 
-mongoose.connection.on("connected", () => {
-    console.log("MongoDB connected successfully");
-});
+let isConnected = false;
 
 const connectDB = async () => {
+    if (isConnected) return;
     
-    await mongoose.connect(`${process.env.MONGODB_URI}/singularity` )
+    try {
+        await mongoose.connect(`${process.env.MONGODB_URI}/singularity`);
+        isConnected = true;
+        console.log("MongoDB connected successfully");
+    } catch (error) {
+        console.log("MongoDB connection error:", error);
+        throw error;
+    }
 }
 
 export default connectDB;
