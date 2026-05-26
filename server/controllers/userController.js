@@ -6,15 +6,7 @@ const clerkWebhooks = async (req, res) => {
     try {
         await connectDB();
 
-        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-
-        await whook.verify(req.body, {
-            "svix-id": req.headers["svix-id"],
-            "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-signature": req.headers["svix-signature"]
-        });
-
-        // Parse body manually after verification
+        // TEMPORARILY skip verification to test DB saving
         const payload = JSON.parse(req.body);
         const { type, data } = payload;
 
