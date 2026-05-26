@@ -18,18 +18,20 @@ const clerkWebhooks = async (req, res) => {
         const {type, data} = req.body;
 
         switch(type){
-            case "user.created":{
-                const userData = {
-                    clerkId: data.id,
-                    email:data.email_addresses[0].email_address,
-                    firstName: data.first_name,
-                    lastName: data.last_name,
-                    photo : data.image_url
-                };
-                await userModel.create(userData);
-                res.json({})
-                break;
-            }
+            case "user.created": {
+    console.log("Creating user with data:", data); // ← add this
+    const userData = {
+        clerkId: data.id,
+        email: data.email_addresses[0].email_address,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        photo: data.image_url
+    };
+    console.log("userData:", userData); // ← and this
+    await userModel.create(userData);
+    res.json({success: true})
+    break;
+}
             case "user.updated":{
                     const userData = {
                     email:data.email_addresses[0].email_address,
