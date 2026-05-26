@@ -39,7 +39,6 @@ const clerkWebhooks = async (req, res) => {
                 };
                 await userModel.findOneAndUpdate({clerkId: data.id}, userData);
                 res.json({})
-                break;
 
                 break;
             }
