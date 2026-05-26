@@ -21,18 +21,18 @@ const clerkWebhooks = async (req, res) => {
 
         switch(type){
             case "user.created": {
-    console.log("Creating user with data:", data); // ← add this
+    console.log("MONGO URI:", process.env.MONGODB_URI ? "EXISTS" : "MISSING");
+    console.log("Raw data:", JSON.stringify(data));
     const userData = {
         clerkId: data.id,
         email: data.email_addresses[0].email_address,
         firstName: data.first_name,
         lastName: data.last_name,
         photo: data.image_url
-
     };
-    console.log("userData:", userData); // ← and this
+    console.log("userData to save:", JSON.stringify(userData));
     await userModel.create(userData);
-    res.json({success: true})
+    res.json({success: true});
     break;
 }
             case "user.updated":{
