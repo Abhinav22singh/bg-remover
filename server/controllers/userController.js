@@ -6,12 +6,18 @@ const clerkWebhooks = async (req, res) => {
     try {
         await connectDB();
 
-        // TEMPORARILY skip verification to test DB saving
+        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+
+        await whook.verify(req.body, {
+            "svix-id": req.headers["svix-id"],
+            "svix-timestamp": req.headers["svix-timestamp"],
+            "svix-signature": req.headers["svix-signature"]
+        });
+
         const payload = JSON.parse(req.body);
         const { type, data } = payload;
 
         console.log("Webhook type:", type);
-        console.log("Data:", JSON.stringify(data));
 
         switch (type) {
             case "user.created": {
@@ -22,7 +28,6 @@ const clerkWebhooks = async (req, res) => {
                     lastName: data.last_name,
                     photo: data.image_url
                 };
-                console.log("Creating user:", JSON.stringify(userData));
                 await userModel.create(userData);
                 res.json({ success: true });
                 break;
