@@ -3,20 +3,19 @@ import express from "express"
 import cors from "cors"
 import connectDB from "./configs/mongodb.js"
 import userRouter from "./routes/userRoutes.js"
-// App configuration
 
 const PORT = process.env.PORT || 4000
 const app = express()
-await connectDB()
 
-// Middlewares
+// Raw body for webhook BEFORE express.json()
+app.use("/api/user/webhooks", express.raw({ type: "*/*" }))
+
 app.use(express.json())
 app.use(cors())
 
-// Api routes
-app.get("/", (req, res) => 
-  res.send("Hello from the server!" )
-)
+await connectDB()
+
+app.get("/", (req, res) => res.send("Hello from the server!"))
 app.use("/api/user", userRouter)
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
