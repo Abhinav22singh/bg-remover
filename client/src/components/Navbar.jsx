@@ -1,10 +1,21 @@
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react'
 import { assets } from '../assets/assets'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { AppContext } from '../context/AppContext'
+import { useContext,useEffect } from 'react'
 
 const Navbar = () => {
   const { openSignIn } = useClerk()
   const { isSignedIn, user } = useUser()
+  const {credit,loadCreditsData} = useContext(AppContext)
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if(isSignedIn){
+      loadCreditsData()
+    }
+  }, [isSignedIn])  
 
   return (
     <div className='flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-20 xl:px-32 py-3 bg-black border-b border-gray-800 sticky top-0 z-50'>
@@ -19,6 +30,13 @@ const Navbar = () => {
 
       {isSignedIn
         ? <div className='flex items-center gap-3'>
+          <button onClick={()=>navigate("/buy")} className='flex items-center gap-2 bg-gray-700 border border-gray-400 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 hover:bg-gray-800'>
+  <img src={assets.credit_icon} alt="" className='w-4 h-4'/>
+  <p className='text-white text-sm font-medium'>
+    Credits : <span className='text-yellow-400 font-bold'>{credit}</span>
+  </p>
+</button>
+<p className='text-purple-400 max-sm:hidden'>Hi ,{user.fullName}</p>
             <UserButton />
           </div>
         : <button

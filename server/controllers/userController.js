@@ -24,8 +24,8 @@ const clerkWebhooks = async (req, res) => {
                 const userData = {
                     clerkId: data.id,
                     email: data.email_addresses[0].email_address,
-                    firstName: data.first_name,
-                    lastName: data.last_name,
+                    firstName: data.first_name || "",
+                    lastName: data.last_name || "",
                     photo: data.image_url
                 };
                 await userModel.create(userData);
@@ -35,8 +35,8 @@ const clerkWebhooks = async (req, res) => {
             case "user.updated": {
                 const userData = {
                     email: data.email_addresses[0].email_address,
-                    firstName: data.first_name,
-                    lastName: data.last_name,
+                    firstName: data.first_name || "",
+                    lastName: data.last_name || "",
                     photo: data.image_url
                 };
                 await userModel.findOneAndUpdate({ clerkId: data.id }, userData);
@@ -60,4 +60,21 @@ const clerkWebhooks = async (req, res) => {
     }
 }
 
-export { clerkWebhooks };
+const userCredits = async (req, res) => {
+    try {
+        await connectDB()
+        const clerkId = req.clerkId
+        console.log("clerkId:", clerkId)
+        const userData = await userModel.findOne({ clerkId })
+        console.log("userData:", userData)
+        if(!userData){
+            return res.json({ success: false, message: "User not found" })
+        }
+        res.json({ success: true, credits: userData.creditBalance })
+    } catch (error) {
+        console.log("Error:", error.message);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { clerkWebhooks, userCredits };

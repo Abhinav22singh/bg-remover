@@ -17,17 +17,18 @@ const userSchema = new mongoose.Schema({
     },
     firstName: {
         type: String,
-        required: true
+        required: false,
+        default: ""
     },
     lastName: {
         type: String,
-        required: true
+        required: false,
+        default: ""
     },
     creditBalance: {
         type: Number,
         default: 6
     }
-
 })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
