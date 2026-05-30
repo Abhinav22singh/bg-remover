@@ -1,5 +1,4 @@
 import axios from "axios";
-import fs from "fs";
 import FormData from "form-data";
 import userModel from "../models/userModel.js";
 import connectDB from "../configs/mongodb.js";
@@ -20,16 +19,16 @@ const removeBgImage = async (req, res) => {
             return res.json({ success: false, message: "Insufficient credits", creditBalance: user.creditBalance });
         }
 
-        const imagePath = req.file.path;
-
-        const imageFile = fs.createReadStream(imagePath);
-
         const formData = new FormData();
-        formData.append("image_file", imageFile);
+        formData.append("image_file", req.file.buffer, {
+            filename: req.file.originalname,
+            contentType: req.file.mimetype
+        });
 
         const { data } = await axios.post("https://clipdrop-api.co/remove-background/v1", formData, {
             headers: {
-                "x-api-key": process.env.CLIPDROP_API
+                "x-api-key": process.env.CLIPDROP_API,
+                ...formData.getHeaders()
             },
             responseType: "arraybuffer"
         });
