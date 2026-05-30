@@ -1,6 +1,66 @@
+import { useContext } from "react"
 import { assets, plans } from "../assets/assets"
+import { AppContext } from "../context/AppContext"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "@clerk/clerk-react"
+import { toast } from "react-toastify"
+import axios from "axios"
 
 const BuyCredit = () => {
+
+  const { backendUrl, loadCreditsData } = useContext(AppContext)
+  const navigate = useNavigate()
+  const { getToken } = useAuth()
+
+  const initpay = async (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Singularity",
+      description: "Credits Purchase",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        console.log("Payment successful:", response);
+        const token = await getToken()
+        try {
+          const { data } = await axios.post(backendUrl + "/api/user/verify-razor", response, {
+            headers: { token }
+          })
+          if (data.success) {
+            toast.success("credit added successfully")
+            loadCreditsData()
+            navigate("/")
+          }
+        } catch (error) {
+          console.log("Payment verification error:", error)
+          toast.error(error.message)
+          
+        }
+      }
+    }
+    const rzp = new window.Razorpay(options)
+    rzp.open()
+  }
+
+  const paymentRazorpay = async (planId) => {
+    try {
+      const token = await getToken()
+      const { data } = await axios.post(
+        backendUrl + "/api/user/pay-razor",
+        { planId },
+        { headers: { token } }
+      )
+      if (data.success) {
+        initpay(data.order)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
   return (
     <div className="min-h-[80vh] text-center pt-14 mb-10 px-4 lg:px-44">
 
@@ -25,7 +85,9 @@ const BuyCredit = () => {
               <span className="text-violet-600">${item.price}</span>
               <span className="text-base font-medium text-gray-400"> / {item.credits} credits</span>
             </p>
-            <button className="w-full mt-4 px-6 py-2.5 text-sm font-medium text-white bg-linear-to-r from-violet-600 to-fuchsia-500 rounded-full hover:scale-105 transition-all duration-300">
+            <button
+              onClick={() => paymentRazorpay(item.id)}
+              className="w-full mt-4 px-6 py-2.5 text-sm font-medium text-white bg-linear-to-r from-violet-600 to-fuchsia-500 rounded-full hover:scale-105 transition-all duration-300">
               Purchase
             </button>
           </div>

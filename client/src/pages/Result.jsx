@@ -20,11 +20,13 @@ const Result = () => {
           {/* Left Side */}
           <div>
             <p className="font-semibold text-gray-600 mb-2">Original</p>
-            <img
-              className="rounded-md border w-full h-full object-cover min-h-[400px]"
-              src={image ? URL.createObjectURL(image) : ""}
-              alt=""
-            />
+            <div className="relative h-[400px] rounded-md border overflow-hidden bg-gray-50">
+              <img
+                className="absolute top-0 left-0 w-full h-full object-contain"
+                src={image ? URL.createObjectURL(image) : ""}
+                alt=""
+              />
+            </div>
           </div>
 
           {/* Right Side */}
@@ -32,11 +34,11 @@ const Result = () => {
             <p className="font-semibold text-gray-600 mb-2">
               Background Removed
             </p>
-            <div className="rounded-md border border-gray-300 h-full relative bg-layer overflow-hidden min-h-[400px]">
+            <div className="rounded-md border border-gray-300 relative bg-layer h-[400px]">
               <img
                 src={resultImage ? resultImage : ""}
                 alt=""
-                className="w-full h-full object-contain"
+                className="absolute top-0 left-0 w-full h-full object-contain"
               />
               <div className="absolute right-1/2 bottom-1/2 translate-x-1/2 translate-y-1/2">
                 <div className="flex flex-col items-center gap-3">
